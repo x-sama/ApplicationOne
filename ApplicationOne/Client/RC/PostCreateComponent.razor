@@ -1,0 +1,80 @@
+﻿
+@inject NavigationManager navigationManager
+@inject IBlogServices blogservices
+
+    <HeroSection image="'img/brand.jpg'" Title="Create a new post" subTtitle="creativity ids everything . be creative"></HeroSection>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+
+                <EditForm Model="@newPost" OnValidSubmit="@WhenValidSubmit">
+                    <DataAnnotationsValidator />
+                    <div class="form-group">
+                        <label for="title">Ttitle</label>
+                        <InputText class="form-control" id="title" @bind-Value="newPost.Title"></InputText>
+                        <ValidationMessage For="(() => newPost.Title)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="url">URL</label>
+                        <InputText class="form-control" id="url" @bind-Value="newPost.URL"></InputText>
+                        <ValidationMessage For="(() => newPost.URL)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="upload">Upload image</label>
+                        <InputFile id="upload" class="form-control-file" OnChange="OnFileChange" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Description">Description</label>
+                        <InputText class="form-control" id="Description" @bind-Value="newPost.Description"></InputText>
+                        <ValidationMessage For="(() => newPost.Description)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Content">Content</label>
+                        <InputTextArea class="form-control" id="Content" @bind-Value="newPost.Content"></InputTextArea>
+                        <ValidationMessage For="(() => newPost.Content)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Date">Created Date</label>
+                        <InputDate class="form-control" id="Date" @bind-Value="newPost.CreatedDate"></InputDate>
+                    </div>
+                    <div class="form-check">
+
+                        <InputCheckbox class="form-check-input" id="Pub" @bind-Value="newPost.isPublished"></InputCheckbox>
+                        <label for="Pub">Published</label>
+                        <ValidationMessage For="(() => newPost.isPublished)" />
+                    </div>
+                    <input type="submit" value="Submit" class="btn btn-primary" />
+
+                </EditForm>
+            </div>
+        </div>
+    </div>
+
+
+
+    @code {
+
+        private Post newPost = new Post();
+
+        private async Task WhenValidSubmit()
+        {
+            // post the data
+            var result = await blogservices.PostBlogToDatabase(newPost);
+            navigationManager.NavigateTo($"/post/{result.URL}");
+        }
+
+
+        //  asign image when upload it
+        private async Task OnFileChange(InputFileChangeEventArgs e)
+        {
+            var Format = "image/png"; // this is for what kind of image format
+            var resizeimage = await e.File.RequestImageFileAsync(Format, 900, 900); // resize the image
+            var buffer = new byte[resizeimage.Size];
+            await resizeimage.OpenReadStream().ReadAsync(buffer);
+            var imageData = $"data:{Format};base64,{Convert.ToBase64String(buffer)}";
+            newPost.Image = imageData;
+            Console.WriteLine(imageData);
+
+        }
+
+    }

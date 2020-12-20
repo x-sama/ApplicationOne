@@ -1,0 +1,40 @@
+﻿@page "/post/{url}"
+@inject IBlogServices blogservice
+<HeroSection image="'img/Detail.jpg'" Title="Details is Everything" subTtitle="See post Details"></HeroSection>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            @if (curretpost != null)
+            {
+                <div class="card">
+                    <img class="card-img-top" src="@curretpost.Image" alt="Card image cap">
+                    <div class="card-header">
+                        @curretpost.Title
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">@curretpost.Description</h5>
+                        <p class="card-text">@curretpost.Content</p>
+                        <a href="/" class="btn btn-primary">Back To Main</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    Post curretpost;
+
+    [Parameter]
+    public string Url { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        curretpost = await blogservice.GetPost(Url);
+    }
+
+}

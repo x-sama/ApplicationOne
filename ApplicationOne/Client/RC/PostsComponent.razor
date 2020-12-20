@@ -1,0 +1,56 @@
+﻿@inject IBlogServices blogservice
+<HeroSection image="'img/home-bg.jpg'" Title="Clean Blog" subTtitle="a Blog by the Lord"></HeroSection>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                @if (posts != null && posts.Count > 0)
+                {
+                    @foreach (var post in posts)
+                    {
+
+
+                        <div class="post-preview">
+                            <a href="/post/@post.URL">
+                                <h2 class="post-title">
+                                    @post.Title
+                                </h2>
+                                <h3 class="post-subtitle">
+                                    @post.Description
+                                </h3>
+                            </a>
+                            <p class="post-meta">
+                                Posted by
+                                <a href="/post/@post.URL">Start Bootstrap</a>
+                                on @post.CreatedDate.ToString("MMMM dd yyyy")
+                            </p>
+                        </div>
+                        <hr>
+                    }
+                }
+                else
+                {
+                    <h1>Loading ...</h1>
+                }
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    @code {
+
+        private List<Post> posts = new List<Post>();
+
+        protected override async Task OnInitializedAsync()
+        {
+            base.OnInitialized();
+            posts = await blogservice.GetAllPosts();
+        }
+
+
+
+    }
